@@ -1,6 +1,16 @@
 {
+  "name": "Projeto",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm start",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\""
+  },
   "devDependencies": {
-    "sequelize": "^6.37.3",
-    "sequelize-cli": "^6.6.2"
+    "concurrently": "^9.1.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5"
   }
 }
