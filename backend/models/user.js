@@ -20,10 +20,6 @@ module.exports = (sequelize) =>{
             type: Sequelize.STRING,
             allowNull: false
         },
-        type:{
-            ENUM
-        }
-
     },
         {
         timestamps: false,
