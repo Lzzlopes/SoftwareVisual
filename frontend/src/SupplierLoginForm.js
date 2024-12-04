@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
-const UserLoginForm = ({ onLogin }) => {
+const SupplierLoginForm = ({ onLogin }) => {
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -25,23 +25,22 @@ const UserLoginForm = ({ onLogin }) => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:8080/users/login', formData, {
+            const response = await axios.post('http://localhost:8080/suppliers/login', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
 
             if (response.status === 200) {
-                // Armazenar o token e o userId recebidos
                 const { Token, userId } = response.data;
 
                 if (Token && userId) {
-                    localStorage.setItem('token', Token); // Salvar o token no localStorage
+                    localStorage.setItem('token', Token);
                     localStorage.setItem('userId', userId);
-                    onLogin(); // Atualiza o estado de autenticação no App
-                    navigate('/products'); // Redireciona para a página de produtos
+                    onLogin('supplier'); // Atualiza o estado de autenticação com 'supplier'
+                    navigate('/products');
                 } else {
-                    setResponseMessage('Erro: Não foi possível autenticar o usuário.');
+                    setResponseMessage('Erro: Não foi possível autenticar o fornecedor.');
                 }
             } else {
                 setResponseMessage('Credenciais inválidas');
@@ -54,7 +53,7 @@ const UserLoginForm = ({ onLogin }) => {
 
 
     return (
-        <div className="user-login">
+        <div className="supplier-login">
             <h3>Entrar</h3>
             <form onSubmit={handleSubmit} className="form-group">
                 <div>
@@ -82,16 +81,18 @@ const UserLoginForm = ({ onLogin }) => {
                 <button type="submit" className="btn btn-primary btn-block mt-3">
                     Entrar
                 </button>
-
             </form>
             {responseMessage && <p>{responseMessage}</p>}
+
+            {/* Botão para redirecionar para a página de login do usuário */}
             <button
                 className="btn btn-secondary mt-3"
-                onClick={() => navigate('/supplier-login')}
+                onClick={() => navigate('/login')}
             >
-                Login de Fornecedor
+                Login de Usuário
             </button>
         </div>
     );
 };
-export default UserLoginForm;
+
+export default SupplierLoginForm;

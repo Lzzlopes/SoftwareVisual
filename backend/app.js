@@ -13,6 +13,7 @@ var usersRouter = require('./routes/users');//Para a rota users ./routes/users.j
 var productsRouter = require('./routes/products');//Para a rota products ./routes/products.js
 var cartRouter = require('./routes/cart'); // para a rota cart ./routes/cart.js
 var paymentRouter = require('./routes/payment');
+var supplierRouter = require('./routes/supplier');
 
 var app = express();//Ativa a API com o Express
 
@@ -29,6 +30,7 @@ app.use('/users', usersRouter);//Cria a rota app/users
 app.use('/products', productsRouter);
 app.use('/cart', cartRouter);
 app.use('/payment', paymentRouter);
+app.use('/suppliers', supplierRouter);
 
 // Sincronizando o Sequelize (em dev)
 //Instanciar o banco de dados
@@ -36,7 +38,7 @@ app.use('/payment', paymentRouter);
 const db = require('./models');
 
 async function applyDataStructure(){
-    await db.sequelize.sync({force: false});
+    await db.sequelize.sync({force: true});
 }
 
 applyDataStructure();

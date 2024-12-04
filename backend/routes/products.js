@@ -21,7 +21,7 @@ router.get('/', function(req, res, next) {
 });
 
 //Rota para criar novo produto
-router.post('/novoproduto', auth.verifyToken, async (req,res)=>{
+router.post('/novoproduto', /*auth.verifyToken, */ async (req,res)=>{
     await productController.createProduct(req, res);
 });
 
@@ -39,7 +39,7 @@ router.put('/atualizarproduto/:id', async (req,res)=>{
 router.delete('/deletar/:id', async (req,res)=>{
     await productController.deleteProduct(req,res);
 });
-router.get('/getProductById/:id', auth.verifyToken, async (req,res)=>{
+router.get('/getProductById/:id', /*auth.verifyToken,*/ async (req,res)=>{
     await productController.findProductById(req, res);
 });
 

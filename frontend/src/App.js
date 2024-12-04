@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css'; // Import Bootstrap
-import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import UserAccountForm from './UserAccountForm';
 import ProductDataForm from './ProductDataForm';
 import UserLoginForm from './UserLoginForm';
@@ -11,30 +11,39 @@ import UpdateProductDataForm from './UpdateProductForm';
 import DeleteProduct from './DeleteProduct';
 import Cart from './Cart'
 import Payment from './Payment';
+import SupplierAccountForm from "./SupplierAccountForm";
+import SupplierLoginForm from "./SupplierLoginForm";
 
 function App() {
-    const [isAuthenticated, setIsAuthenticated] = useState(false); // Estado de autenticação
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [userType, setUserType] = useState(null);
 
     useEffect(() => {
-        // Verificar se o token está presente no localStorage
         const token = localStorage.getItem('authToken');
-        if (token) {
-            setIsAuthenticated(true); // Se o token existir, o usuário está autenticado
+        const storedUserType = localStorage.getItem('userType');
+            if (token && storedUserType) {
+            setIsAuthenticated(true);
+            setUserType(storedUserType);
         }
-    }, []); // Esse efeito só é executado uma vez, no início da aplicação
+    }, []);
 
-    const handleLogin = () => {
-        setIsAuthenticated(true); // Define como autenticado após login
+    const handleLogin = (userType) => {
+        setIsAuthenticated(true);
+        setUserType(userType);
+        localStorage.setItem('userType', userType);
+        localStorage.setItem('authToken', 'true'); // Set a dummy token for simplicity
     };
 
     const handleLogout = () => {
-        setIsAuthenticated(false); // Redefine como não autenticado após logout
+        setIsAuthenticated(false);
+        setUserType(null);
+        localStorage.clear();
     };
 
     return (
         <Router>
             <div className="App">
-                {/* Bootstrap Navigation Bar */}
+                {/* Navigation Bar */}
                 <nav className="navbar navbar-expand-lg navbar-light bg-light">
                     <Link className="navbar-brand" to="/">Landing Page</Link>
                     <div className="collapse navbar-collapse">
@@ -47,11 +56,8 @@ function App() {
                                     <li className="nav-item">
                                         <Link className="nav-link" to="/login">Login</Link>
                                     </li>
-                                    <li className="nav-item">
-                                        <Link className="nav-link" to="/products">Produtos</Link>
-                                    </li>
                                 </>
-                            ) : (
+                            ) : userType === 'supplier' ? (
                                 <>
                                     <li className="nav-item">
                                         <Link className="nav-link" to="/products">Produtos</Link>
@@ -64,6 +70,15 @@ function App() {
                                     </li>
                                     <li className="nav-item">
                                         <Link className="nav-link" to="/deleteProduct">Deletar Produto</Link>
+                                    </li>
+                                    <li className="nav-item">
+                                        <Link className="nav-link" to="/logout">Sair</Link>
+                                    </li>
+                                </>
+                            ) : (
+                                <>
+                                    <li className="nav-item">
+                                        <Link className="nav-link" to="/products">Produtos</Link>
                                     </li>
                                     <li className="nav-item">
                                         <Link className="nav-link" to="/cart">Carrinho</Link>
@@ -80,21 +95,24 @@ function App() {
                 {/* Main Content */}
                 <div className="container text-center mt-5">
                     <Routes>
-                        <Route path="/" element={<h1 className="display-4">Segundo Bimestre</h1>}/>
-                        <Route path="/create-account" element={<UserAccountForm/>}/>
+                        <Route path="/" element={<h1 className="display-4">Bem-vindo</h1>}/>
+                        <Route path="/create-account" element={<UserAccountForm onLogin={handleLogin}/>}/>
                         <Route path="/products" element={<Products/>}/>
-                        <Route path="/login" element={<UserLoginForm onLogin={handleLogin} />}/>
-                        <Route path="/logout" element={<Logout onLogout={handleLogout} />}/>
-                        <Route path="/novoProduto" element={<ProductDataForm/> }/>
-                        <Route path="/updateProduct" element={<UpdateProductDataForm />}/>
-                        <Route path="/deleteProduct" element={<DeleteProduct />}/>
+                        <Route path="/login" element={<UserLoginForm onLogin={handleLogin}/>}/>
+                        <Route path="/logout" element={<Logout onLogout={handleLogout}/>}/>
+                        <Route path="/novoProduto" element={<ProductDataForm/>}/>
+                        <Route path="/updateProduct" element={<UpdateProductDataForm/>}/>
+                        <Route path="/deleteProduct" element={<DeleteProduct/>}/>
                         <Route path="/cart" element={<Cart/>}/>
                         <Route path="/payment" element={<Payment/>}/>
+                        <Route path="/supplier-account" element={<SupplierAccountForm onLogin={handleLogin}/>}/>
+                        <Route path="/supplier-login" element={<SupplierLoginForm onLogin={handleLogin}/>}/>
                     </Routes>
                 </div>
             </div>
         </Router>
     );
 }
+
 
 export default App;

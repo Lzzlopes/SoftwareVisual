@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate} from 'react-router-dom'
 
-const UserAccountForm = () => {
+const UserAccountForm = ({onLogin}) => {
     const [formData, setFormData] = useState({
         email:'',
         data_nasc:'',
@@ -42,7 +42,11 @@ const UserAccountForm = () => {
                 });
 
             if(response.status === 200){
+                const { userId } = response.data;
+                localStorage.setItem('userId', userId);
+
                 setResponseMessage('Conta criada!');
+                onLogin();
                 navigate('/products')
             }
             else{
@@ -100,6 +104,12 @@ const UserAccountForm = () => {
                 <button type="submit" className="btn btn-primary btn-block mt-3">Create Account</button>
             </form>
             {responseMessage && <p>{responseMessage}</p>}
+            <button
+                className="btn btn-secondary mt-3"
+                onClick={() => navigate('/supplier-account')}
+            >
+                Criar conta de Fornecedor
+            </button>
         </div>
     );
 };

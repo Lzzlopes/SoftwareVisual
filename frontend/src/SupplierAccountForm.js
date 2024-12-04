@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom'
 
-const UserLoginForm = ({ onLogin }) => {
+const UserAccountForm = ({onLogin}) => {
     const [formData, setFormData] = useState({
-        email: '',
+        email:'',
+        cnpj:'',
         password: '',
     });
 
@@ -13,6 +14,7 @@ const UserLoginForm = ({ onLogin }) => {
 
     // Handle form input change
     const handleChange = (e) => {
+        console.log('Entrou aqui')
         const { name, value } = e.target;
         setFormData({
             ...formData,
@@ -25,37 +27,35 @@ const UserLoginForm = ({ onLogin }) => {
         e.preventDefault();
 
         try {
-            const response = await axios.post('http://localhost:8080/users/login', formData, {
+            const response = await axios.post('http://localhost:8080/suppliers/createSupplier', formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
             });
 
             if (response.status === 200) {
-                // Armazenar o token e o userId recebidos
-                const { Token, userId } = response.data;
-
-                if (Token && userId) {
-                    localStorage.setItem('token', Token); // Salvar o token no localStorage
-                    localStorage.setItem('userId', userId);
-                    onLogin(); // Atualiza o estado de autenticação no App
-                    navigate('/products'); // Redireciona para a página de produtos
-                } else {
-                    setResponseMessage('Erro: Não foi possível autenticar o usuário.');
-                }
+                setResponseMessage('Fornecedor criado com sucesso!');
+                onLogin('supplier');
+                navigate('/products')
             } else {
-                setResponseMessage('Credenciais inválidas');
+                setResponseMessage('Erro ao criar fornecedor: ' + response.statusText);
             }
         } catch (error) {
-            console.error('Erro ao fazer login:', error);
-            setResponseMessage('Erro ao fazer login. Verifique suas credenciais.');
+            if (error.response) {
+                // Se a resposta for um erro
+                setResponseMessage(`Erro: ${error.response.status} - ${error.response.data.message || 'Erro desconhecido'}`);
+            } else if (error.request) {
+                // Se não houve resposta, mas a requisição foi feita
+                setResponseMessage('Falha na conexão com o servidor.');
+            } else {
+                setResponseMessage('Erro desconhecido: ' + error.message);
+            }
         }
     };
 
-
     return (
-        <div className="user-login">
-            <h3>Entrar</h3>
+        <div className="user-account-form">
+            <h3>Crie sua conta de usuário</h3>
             <form onSubmit={handleSubmit} className="form-group">
                 <div>
                     <label>Email:</label>
@@ -64,6 +64,17 @@ const UserLoginForm = ({ onLogin }) => {
                         type="email"
                         name="email"
                         value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
+                </div>
+                <div>
+                    <label>CNPJ:</label>
+                    <input
+                        className="form-control"
+                        type="text"
+                        name="cnpj"
+                        value={formData.cnpj}
                         onChange={handleChange}
                         required
                     />
@@ -79,19 +90,17 @@ const UserLoginForm = ({ onLogin }) => {
                         required
                     />
                 </div>
-                <button type="submit" className="btn btn-primary btn-block mt-3">
-                    Entrar
-                </button>
-
+                <button type="submit" className="btn btn-primary btn-block mt-3">Create Account</button>
             </form>
             {responseMessage && <p>{responseMessage}</p>}
             <button
                 className="btn btn-secondary mt-3"
-                onClick={() => navigate('/supplier-login')}
+                onClick={() => navigate('/create-account')}
             >
-                Login de Fornecedor
+                Criar conta de Usuário
             </button>
         </div>
     );
 };
-export default UserLoginForm;
+
+export default UserAccountForm;
